@@ -19,6 +19,22 @@ is_valid_json() {
     return 0
 }
 
+# Function to remove empty directories recursively
+clean_empty_dirs() {
+    echo "Cleaning up empty directories..."
+    while true; do
+        # Find empty directories and delete them
+        empty_dirs=$(find . -type d -empty -not -path "*/\.*")
+        if [ -z "$empty_dirs" ]; then
+            break
+        fi
+        echo "$empty_dirs" | while read -r dir; do
+            echo "Removing empty directory: $dir"
+            rmdir "$dir"
+        done
+    done
+}
+
 echo "Scanning for duplicate and empty JSON files..."
 
 # Find all JSON files
@@ -53,4 +69,7 @@ find . -type f -name "*.json" | while read -r file; do
     fi
 done
 
-echo "Finished processing files."
+# Clean up empty directories after processing files
+clean_empty_dirs
+
+echo "Finished processing files and cleaning up directories."
